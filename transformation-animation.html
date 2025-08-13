@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASTRA 漏洞检测流程动画</title>
+    <title>ASTRA Vulnerability Detection Flow Animation</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -133,7 +133,7 @@
             };
 
             const resetAllStages = () => {
-                // 这个函数会被activateStage的逻辑处理
+                // This function will be handled by the logic of activateStage
             };
 
             const activateStage = (index) => {
@@ -181,7 +181,7 @@
             return React.createElement('div', {
                 className: "astra-container"
             }, [
-                // 背景装饰
+                // Background decoration
                 React.createElement('div', {
                     key: 'background',
                     className: "absolute inset-0 pointer-events-none"
@@ -218,7 +218,7 @@
                     })
                 ]),
 
-                // 循环指示器
+                // Loop indicator
                 React.createElement('div', {
                     key: 'indicator',
                     className: "absolute top-8 right-8 bg-slate-800/80 backdrop-blur-sm px-4 py-2 rounded-full text-sm text-slate-300 border border-slate-700/50 flex items-center gap-2 z-20"
@@ -231,7 +231,7 @@
                     '自动循环播放'
                 ]),
 
-                // 主内容
+                // Main content
                 React.createElement('div', {
                     key: 'content',
                     className: "relative z-10 flex items-center justify-center min-h-screen p-8"
@@ -240,7 +240,7 @@
                         key: 'main',
                         className: "relative flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 lg:gap-24 w-full max-w-7xl mx-auto"
                     }, [
-                        // 桌面版中央箭头
+                        // Desktop version central arrow
                         React.createElement(motion.div, {
                             key: 'arrow',
                             className: "hidden md:block absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none",
@@ -357,7 +357,7 @@
                             })
                         ])),
 
-                        // 椭圆容器
+                        // Ellipse container
                         ...stages.map((stage, index) => 
                             React.createElement('div', {
                                 key: `stage-${index}`,
@@ -387,7 +387,7 @@
                                         ease: "easeOut"
                                     }
                                 }, [
-                                    // 脉冲效果
+                                    // Pulse effect
                                     ...(currentStage === index ? [
                                         React.createElement(motion.div, {
                                             key: 'pulse1',
@@ -422,7 +422,7 @@
                                         })
                                     ] : []),
 
-                                    // SVG装饰
+                                    // SVG decoration
                                     React.createElement('svg', {
                                         key: 'decoration',
                                         className: "absolute inset-0 w-full h-full opacity-10",
@@ -451,9 +451,9 @@
                                         })
                                     ]),
 
-                                    // 椭圆内容 - 根据index渲染不同内容
+                                    // Ellipse content - render different content based on index
                                     ...(index === 1 ? [
-                                        // 第二个椭圆的内容
+                                        // Content of the second ellipse
                                         React.createElement('div', {
                                             key: 'bg1',
                                             className: "absolute inset-0",
@@ -566,7 +566,7 @@
                                     ] : []),
 
                                     ...(index === 0 ? [
-                                        // 第一个椭圆的内容
+                                        // Content of the first ellipse
                                         React.createElement('div', {
                                             key: 'bg1',
                                             className: "absolute inset-0",
@@ -706,7 +706,7 @@
                         )
                     ]),
 
-                    // 进度指示器
+                    // Progress indicator
                     React.createElement('div', {
                         key: 'progress',
                         className: "flex justify-center mt-16"
@@ -752,7 +752,7 @@
                         ])
                     ))),
 
-                    // 描述文字
+                    // Description text
                     React.createElement(motion.div, {
                         key: 'description',
                         className: "text-center mt-12 max-w-3xl mx-auto",
@@ -766,11 +766,11 @@
                             style: {
                                 textShadow: '0 0 30px rgba(72, 61, 139, 0.4)'
                             }
-                        }, 'ASTRA 漏洞检测流程'),
+                        }, 'ASTRA Vulnerability Detection Flow'),
                         React.createElement('p', {
                             key: 'description-text',
                             className: "text-slate-300 leading-relaxed text-lg"
-                        }, '这个动画展示了ASTRA红队系统如何识别安全漏洞：从分析输入空间中的威胁，通过转换层的漏洞检测，最终完成全面的安全评估和威胁缓解。')
+                        }, 'This animation shows how the ASTRA red team system identifies security vulnerabilities: from analyzing threats in the input space, through vulnerability detection in the transformation layer, ultimately completing a comprehensive security assessment and threat mitigation.')
                     ])
                 ])
             ]);
@@ -782,7 +782,7 @@
             }, React.createElement(VulnerabilityFlowAnimation));
         }
 
-        // 渲染应用
+        // Render application
         const root = ReactDOM.createRoot(document.getElementById('astra-vulnerability-animation-root'));
         root.render(React.createElement(App));
     </script>

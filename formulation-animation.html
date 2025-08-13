@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI处理流程 - 自动循环动画</title>
+    <title>AI Processing Flow - Automatic Loop Animation</title>
     <style>
         * {
             margin: 0;
@@ -21,7 +21,7 @@
             position: relative;
         }
 
-        /* 背景装饰 - 与Banner风格一致 */
+        /* Background decoration - consistent with Banner style */
         .background-decoration {
             position: absolute;
             inset: 0;
@@ -174,7 +174,7 @@
             animation: innerPulse 1.5s infinite;
         }
 
-        /* 几何装饰 */
+        /* Geometric decoration */
         .stage-decoration {
             position: absolute;
             inset: 0;
@@ -330,7 +330,7 @@
             font-size: 1.125rem;
         }
 
-        /* 动画 */
+        /* Animation */
         @keyframes pulse {
             0%, 100% {
                 transform: scale(0);
@@ -400,7 +400,7 @@
             animation: drawArrow 1s ease-out forwards;
         }
 
-        /* 循环指示器 */
+        /* Loop indicator */
         .loop-indicator {
             position: absolute;
             top: 2rem;
@@ -427,7 +427,7 @@
             to { transform: rotate(360deg); }
         }
 
-        /* 响应式设计 */
+        /* Responsive design */
         @media (max-width: 768px) {
             .ai-flow-animation {
                 padding: 1rem;
@@ -464,29 +464,29 @@
 </head>
 <body>
     <div class="ai-flow-animation">
-        <!-- 背景装饰 -->
+        <!-- Background decoration -->
         <div class="background-decoration">
             <div class="bg-circle-1"></div>
             <div class="bg-circle-2"></div>
             <div class="grid-pattern"></div>
         </div>
 
-        <!-- 循环指示器 -->
+        <!-- Loop indicator -->
         <div class="loop-indicator">
-            自动循环播放
+            Automatic loop playback
         </div>
 
         <div class="container">
             <div class="flow-container">
-                <!-- 背景连接线 -->
+                <!-- Background connection line -->
                 <div class="connection-line"></div>
 
-                <!-- 三个阶段 -->
+                <!-- Three stages -->
                 <div class="stages-grid">
-                    <!-- 阶段1: 输入空间 -->
+                    <!-- Stage 1: Input space -->
                     <div class="stage">
                         <div class="stage-circle stage-1 inactive" id="stage-0">
-                            <!-- 几何装饰 -->
+                            <!-- Geometric decoration -->
                             <svg class="stage-decoration" viewBox="0 0 200 200">
                                 <defs>
                                     <linearGradient id="stageGradient0" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -508,7 +508,7 @@
                             <h4>Input Space</h4>
                             <p>(Prompt)</p>
                         </div>
-                        <!-- 箭头1 -->
+                        <!-- Arrow 1 -->
                         <div class="arrow" id="arrow-0">
                             <svg width="80" height="24" viewBox="0 0 80 24">
                                 <defs>
@@ -525,10 +525,10 @@
                         </div>
                     </div>
 
-                    <!-- 阶段2: 转换 -->
+                    <!-- Stage 2: Transformation -->
                     <div class="stage">
                         <div class="stage-circle stage-2 inactive" id="stage-1">
-                            <!-- 几何装饰 -->
+                            <!-- Geometric decoration -->
                             <svg class="stage-decoration" viewBox="0 0 200 200">
                                 <defs>
                                     <linearGradient id="stageGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -550,7 +550,7 @@
                             <h4>Transformation</h4>
                             <p>(AI Coding Agent)</p>
                         </div>
-                        <!-- 箭头2 -->
+                        <!-- Arrow 2 -->
                         <div class="arrow" id="arrow-1">
                             <svg width="80" height="24" viewBox="0 0 80 24">
                                 <defs>
@@ -567,10 +567,10 @@
                         </div>
                     </div>
 
-                    <!-- 阶段3: 输出空间 -->
+                    <!-- Stage 3: Output space -->
                     <div class="stage">
                         <div class="stage-circle stage-3 inactive" id="stage-2">
-                            <!-- 几何装饰 -->
+                            <!-- Geometric decoration -->
                             <svg class="stage-decoration" viewBox="0 0 200 200">
                                 <defs>
                                     <linearGradient id="stageGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -595,19 +595,19 @@
                     </div>
                 </div>
 
-                <!-- 进度指示器 -->
+                <!-- Progress indicator -->
                 <div class="progress-indicator">
                     <div class="progress-dot" id="dot-0"></div>
                     <div class="progress-dot" id="dot-1"></div>
                     <div class="progress-dot" id="dot-2"></div>
                 </div>
 
-                <!-- 描述文字 -->
+                <!-- Description text -->
                 <div class="description">
-                    <h2>AI代理处理流程</h2>
+                    <h2>AI Agent Processing Flow</h2>
                     <p>
-                        这个动画展示了AI代理如何处理用户请求：从接收输入提示，通过内部转换和思考过程，
-                        最终生成准确的响应输出。每个阶段都代表了AI处理信息的不同层面。
+                        This animation shows how an AI agent processes user requests: from receiving input prompts, through an internal transformation and thinking process,
+                        ultimately generating accurate response outputs. Each stage represents a different level of AI processing information.
                     </p>
                 </div>
             </div>
@@ -619,15 +619,15 @@
             constructor() {
                 this.currentStage = 0;
                 this.stageCount = 3;
-                this.animationSpeed = 2500; // 每个阶段的停留时间
-                this.cycleDelay = 3000; // 完整循环后的等待时间
+                this.animationSpeed = 2500; // Time for each stage
+                this.cycleDelay = 3000; // Time after complete loop
                 this.isRunning = false;
                 
                 this.init();
             }
             
             init() {
-                // 页面加载完成后自动开始
+                // Start animation after page load
                 if (document.readyState === 'loading') {
                     document.addEventListener('DOMContentLoaded', () => this.startAutoLoop());
                 } else {
@@ -636,7 +636,7 @@
             }
             
             startAutoLoop() {
-                // 初始延迟1秒后开始动画
+                // Start animation after 1 second delay
                 setTimeout(() => {
                     this.runCycle();
                 }, 1000);
@@ -647,7 +647,7 @@
                 this.currentStage = 0;
                 this.resetAllStages();
                 
-                // 开始第一个阶段
+                // Start first stage
                 this.activateStage(0);
             }
             
@@ -661,11 +661,11 @@
                 
                 if (!stageCircle) return;
                 
-                // 激活圆形容器
+                // Activate circle container
                 stageCircle.classList.remove('inactive');
                 stageCircle.classList.add('active', 'processing');
                 
-                // 显示内容
+                // Show content
                 setTimeout(() => {
                     if (stageContent) {
                         stageContent.classList.remove('hidden');
@@ -673,7 +673,7 @@
                     }
                 }, 300);
                 
-                // 显示标签
+                // Show label
                 setTimeout(() => {
                     if (stageLabel) {
                         stageLabel.classList.remove('hidden');
@@ -681,12 +681,12 @@
                     }
                 }, 500);
                 
-                // 激活进度点
+                // Activate progress point
                 if (progressDot) {
                     progressDot.classList.add('active');
                 }
                 
-                // 移除处理效果并显示箭头
+                // Remove processing effect and show arrow
                 setTimeout(() => {
                     if (!this.isRunning) return;
                     
@@ -695,14 +695,14 @@
                     if (index < this.stageCount - 1) {
                         this.showArrow(index);
                         
-                        // 延迟后激活下一个阶段
+                        // Activate next stage after delay
                         setTimeout(() => {
                             if (!this.isRunning) return;
                             this.hideArrow(index);
                             this.activateStage(index + 1);
                         }, 1500);
                     } else {
-                        // 动画完成，等待后重新开始循环
+                        // Animation completed, wait and restart loop
                         setTimeout(() => {
                             if (this.isRunning) {
                                 this.runCycle();
@@ -759,7 +759,7 @@
                 }
             }
             
-            // 控制方法（可选）
+            // Control method (optional)
             pause() {
                 this.isRunning = false;
             }
@@ -779,10 +779,10 @@
             }
         }
         
-        // 自动初始化
+        // Automatic initialization
         window.autoLoopAnimation = new AutoLoopAIAnimation();
         
-        // 可选：页面失焦时暂停，获得焦点时恢复（节省资源）
+        // Optional: pause when page loses focus, resume when page gains focus (save resources)
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 window.autoLoopAnimation.pause();
