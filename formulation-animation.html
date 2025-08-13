@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI处理流程 - 自动循环动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .ai-flow-animation {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #0f0f23 50%, #000000 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            color: white;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 背景装饰 - 与Banner风格一致 */
+        .background-decoration {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-circle-1 {
+            position: absolute;
+            top: 10%;
+            left: 20%;
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(45deg, rgba(96, 165, 250, 0.06) 0%, rgba(147, 51, 234, 0.04) 100%);
+            border-radius: 50%;
+            filter: blur(60px);
+            animation: float1 8s ease-in-out infinite;
+        }
+
+        .bg-circle-2 {
+            position: absolute;
+            bottom: 10%;
+            right: 20%;
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(45deg, rgba(168, 85, 247, 0.04) 0%, rgba(236, 72, 153, 0.03) 100%);
+            border-radius: 50%;
+            filter: blur(60px);
+            animation: float2 10s ease-in-out infinite;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle at center, transparent 1px, rgba(255, 255, 255, 0.02) 1px);
+            background-size: 30px 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .flow-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .connection-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, rgba(135, 206, 235, 0.3) 50%, transparent 100%);
+            transform: translateY(-50%);
+            z-index: 0;
+        }
+
+        .stages-grid {
+            position: relative;
+            z-index: 10;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .stage-circle {
+            width: 14rem;
+            height: 14rem;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(8px);
+            border: 2px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .stage-circle.stage-1 {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(96, 165, 250, 0.05) 100%);
+        }
+
+        .stage-circle.stage-2 {
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(168, 85, 247, 0.05) 100%);
+        }
+
+        .stage-circle.stage-3 {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+        }
+
+        .stage-circle.inactive {
+            transform: scale(0.7);
+            opacity: 0.2;
+            filter: blur(8px);
+        }
+
+        .stage-circle.active {
+            transform: scale(1);
+            opacity: 1;
+            filter: blur(0);
+        }
+
+        .stage-circle.active.stage-1 {
+            box-shadow: 0 0 40px rgba(96, 165, 250, 0.3), 0 0 80px rgba(96, 165, 250, 0.1);
+        }
+
+        .stage-circle.active.stage-2 {
+            box-shadow: 0 0 40px rgba(147, 51, 234, 0.3), 0 0 80px rgba(147, 51, 234, 0.1);
+        }
+
+        .stage-circle.active.stage-3 {
+            box-shadow: 0 0 40px rgba(99, 102, 241, 0.3), 0 0 80px rgba(99, 102, 241, 0.1);
+        }
+
+        .stage-circle.processing::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(135, 206, 235, 0.1) 100%);
+            animation: pulse 2s infinite;
+        }
+
+        .stage-circle.processing::after {
+            content: '';
+            position: absolute;
+            inset: 1rem;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            animation: innerPulse 1.5s infinite;
+        }
+
+        /* 几何装饰 */
+        .stage-decoration {
+            position: absolute;
+            inset: 0;
+            opacity: 0.1;
+        }
+
+        .stage-content {
+            position: relative;
+            z-index: 10;
+            transition: all 0.8s ease;
+        }
+
+        .stage-content.hidden {
+            transform: translateY(15px);
+            opacity: 0;
+        }
+
+        .stage-content.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .stage-title {
+            font-family: Impact, "Arial Black", sans-serif;
+            font-weight: 900;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #87ceeb 0%, #6495ed 25%, #4169e1 50%, #483d8b 75%, #2f1b69 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px rgba(72, 61, 139, 0.3);
+        }
+
+        .stage-subtitle {
+            font-size: 0.875rem;
+            opacity: 0.8;
+            margin-bottom: 1rem;
+            color: #cbd5e1;
+        }
+
+        .stage-text {
+            font-size: 0.875rem;
+            line-height: 1.5;
+            color: #e2e8f0;
+        }
+
+        .stage-label {
+            margin-top: 1.5rem;
+            text-align: center;
+            transition: all 0.8s ease;
+        }
+
+        .stage-label.hidden {
+            transform: translateY(15px);
+            opacity: 0;
+        }
+
+        .stage-label.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .stage-label h4 {
+            font-family: Impact, "Arial Black", sans-serif;
+            font-weight: 900;
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #87ceeb 0%, #6495ed 25%, #4169e1 50%, #483d8b 75%, #2f1b69 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stage-label p {
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+
+        .arrow {
+            position: absolute;
+            right: -3rem;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: all 0.6s ease;
+        }
+
+        .arrow.visible {
+            opacity: 1;
+            animation: slideIn 1s ease-out;
+        }
+
+        .progress-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-top: 4rem;
+        }
+
+        .progress-dot {
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            border: 2px solid #475569;
+            background-color: #1e293b;
+            transition: all 0.5s ease;
+            position: relative;
+        }
+
+        .progress-dot.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-color: #3b82f6;
+            transform: scale(1.2);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+        }
+
+        .progress-dot.active::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.3);
+            animation: ripple 2s infinite;
+        }
+
+        .description {
+            text-align: center;
+            margin-top: 3rem;
+            max-width: 48rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .description h2 {
+            font-family: Impact, "Arial Black", sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #87ceeb 0%, #6495ed 25%, #4169e1 50%, #483d8b 75%, #2f1b69 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(72, 61, 139, 0.4);
+        }
+
+        .description p {
+            color: #cbd5e1;
+            line-height: 1.7;
+            font-size: 1.125rem;
+        }
+
+        /* 动画 */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.3);
+                opacity: 0.4;
+            }
+        }
+
+        @keyframes innerPulse {
+            0%, 100% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes slideIn {
+            0% {
+                transform: translateY(-50%) translateX(-30px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(-50%) translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes drawArrow {
+            0% {
+                stroke-dashoffset: 200;
+            }
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @keyframes float1 {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        @keyframes float2 {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(20px) scale(0.95); }
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        .arrow-path {
+            stroke-dasharray: 200;
+            stroke-dashoffset: 200;
+            animation: drawArrow 1s ease-out forwards;
+        }
+
+        /* 循环指示器 */
+        .loop-indicator {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(8px);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .loop-indicator::before {
+            content: '🔄';
+            animation: rotate 2s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .ai-flow-animation {
+                padding: 1rem;
+            }
+
+            .stages-grid {
+                grid-template-columns: 1fr;
+                gap: 4rem;
+            }
+
+            .arrow {
+                display: none;
+            }
+
+            .stage-circle {
+                width: 12rem;
+                height: 12rem;
+            }
+
+            .connection-line {
+                display: none;
+            }
+
+            .description h2 {
+                font-size: 2rem;
+            }
+
+            .loop-indicator {
+                top: 1rem;
+                right: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ai-flow-animation">
+        <!-- 背景装饰 -->
+        <div class="background-decoration">
+            <div class="bg-circle-1"></div>
+            <div class="bg-circle-2"></div>
+            <div class="grid-pattern"></div>
+        </div>
+
+        <!-- 循环指示器 -->
+        <div class="loop-indicator">
+            自动循环播放
+        </div>
+
+        <div class="container">
+            <div class="flow-container">
+                <!-- 背景连接线 -->
+                <div class="connection-line"></div>
+
+                <!-- 三个阶段 -->
+                <div class="stages-grid">
+                    <!-- 阶段1: 输入空间 -->
+                    <div class="stage">
+                        <div class="stage-circle stage-1 inactive" id="stage-0">
+                            <!-- 几何装饰 -->
+                            <svg class="stage-decoration" viewBox="0 0 200 200">
+                                <defs>
+                                    <linearGradient id="stageGradient0" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#87ceeb" />
+                                        <stop offset="100%" stop-color="#483d8b" />
+                                    </linearGradient>
+                                </defs>
+                                <circle cx="100" cy="100" r="80" stroke="url(#stageGradient0)" stroke-width="1" fill="none" opacity="0.3"/>
+                                <circle cx="100" cy="100" r="60" stroke="url(#stageGradient0)" stroke-width="0.5" fill="none" opacity="0.2"/>
+                            </svg>
+                            
+                            <div class="stage-content hidden" id="content-0">
+                                <div class="stage-title">Input Space</div>
+                                <div class="stage-subtitle">(Prompt)</div>
+                                <div class="stage-text">Write a python program to sort an array</div>
+                            </div>
+                        </div>
+                        <div class="stage-label hidden" id="label-0">
+                            <h4>Input Space</h4>
+                            <p>(Prompt)</p>
+                        </div>
+                        <!-- 箭头1 -->
+                        <div class="arrow" id="arrow-0">
+                            <svg width="80" height="24" viewBox="0 0 80 24">
+                                <defs>
+                                    <linearGradient id="arrowGradient0" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stop-color="#87ceeb" />
+                                        <stop offset="100%" stop-color="#483d8b" />
+                                    </linearGradient>
+                                </defs>
+                                <path class="arrow-path" d="M0,12 L60,12 M45,6 L60,12 L45,18" 
+                                      stroke="url(#arrowGradient0)" stroke-width="3" fill="none" 
+                                      stroke-linecap="round" stroke-linejoin="round"
+                                      filter="drop-shadow(0 0 8px rgba(135, 206, 235, 0.6))"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- 阶段2: 转换 -->
+                    <div class="stage">
+                        <div class="stage-circle stage-2 inactive" id="stage-1">
+                            <!-- 几何装饰 -->
+                            <svg class="stage-decoration" viewBox="0 0 200 200">
+                                <defs>
+                                    <linearGradient id="stageGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#87ceeb" />
+                                        <stop offset="100%" stop-color="#483d8b" />
+                                    </linearGradient>
+                                </defs>
+                                <circle cx="100" cy="100" r="80" stroke="url(#stageGradient1)" stroke-width="1" fill="none" opacity="0.3"/>
+                                <circle cx="100" cy="100" r="60" stroke="url(#stageGradient1)" stroke-width="0.5" fill="none" opacity="0.2"/>
+                            </svg>
+                            
+                            <div class="stage-content hidden" id="content-1">
+                                <div class="stage-title">Transformation</div>
+                                <div class="stage-subtitle">(AI Coding Agent)</div>
+                                <div class="stage-text">Let's think step by step. The user asks me ...</div>
+                            </div>
+                        </div>
+                        <div class="stage-label hidden" id="label-1">
+                            <h4>Transformation</h4>
+                            <p>(AI Coding Agent)</p>
+                        </div>
+                        <!-- 箭头2 -->
+                        <div class="arrow" id="arrow-1">
+                            <svg width="80" height="24" viewBox="0 0 80 24">
+                                <defs>
+                                    <linearGradient id="arrowGradient1" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stop-color="#87ceeb" />
+                                        <stop offset="100%" stop-color="#483d8b" />
+                                    </linearGradient>
+                                </defs>
+                                <path class="arrow-path" d="M0,12 L60,12 M45,6 L60,12 L45,18" 
+                                      stroke="url(#arrowGradient1)" stroke-width="3" fill="none" 
+                                      stroke-linecap="round" stroke-linejoin="round"
+                                      filter="drop-shadow(0 0 8px rgba(135, 206, 235, 0.6))"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- 阶段3: 输出空间 -->
+                    <div class="stage">
+                        <div class="stage-circle stage-3 inactive" id="stage-2">
+                            <!-- 几何装饰 -->
+                            <svg class="stage-decoration" viewBox="0 0 200 200">
+                                <defs>
+                                    <linearGradient id="stageGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#87ceeb" />
+                                        <stop offset="100%" stop-color="#483d8b" />
+                                    </linearGradient>
+                                </defs>
+                                <circle cx="100" cy="100" r="80" stroke="url(#stageGradient2)" stroke-width="1" fill="none" opacity="0.3"/>
+                                <circle cx="100" cy="100" r="60" stroke="url(#stageGradient2)" stroke-width="0.5" fill="none" opacity="0.2"/>
+                            </svg>
+                            
+                            <div class="stage-content hidden" id="content-2">
+                                <div class="stage-title">Output Space</div>
+                                <div class="stage-subtitle">(Response)</div>
+                                <div class="stage-text">Sure, here's the python program that sorts ...</div>
+                            </div>
+                        </div>
+                        <div class="stage-label hidden" id="label-2">
+                            <h4>Output Space</h4>
+                            <p>(Response)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 进度指示器 -->
+                <div class="progress-indicator">
+                    <div class="progress-dot" id="dot-0"></div>
+                    <div class="progress-dot" id="dot-1"></div>
+                    <div class="progress-dot" id="dot-2"></div>
+                </div>
+
+                <!-- 描述文字 -->
+                <div class="description">
+                    <h2>AI代理处理流程</h2>
+                    <p>
+                        这个动画展示了AI代理如何处理用户请求：从接收输入提示，通过内部转换和思考过程，
+                        最终生成准确的响应输出。每个阶段都代表了AI处理信息的不同层面。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class AutoLoopAIAnimation {
+            constructor() {
+                this.currentStage = 0;
+                this.stageCount = 3;
+                this.animationSpeed = 2500; // 每个阶段的停留时间
+                this.cycleDelay = 3000; // 完整循环后的等待时间
+                this.isRunning = false;
+                
+                this.init();
+            }
+            
+            init() {
+                // 页面加载完成后自动开始
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', () => this.startAutoLoop());
+                } else {
+                    this.startAutoLoop();
+                }
+            }
+            
+            startAutoLoop() {
+                // 初始延迟1秒后开始动画
+                setTimeout(() => {
+                    this.runCycle();
+                }, 1000);
+            }
+            
+            runCycle() {
+                this.isRunning = true;
+                this.currentStage = 0;
+                this.resetAllStages();
+                
+                // 开始第一个阶段
+                this.activateStage(0);
+            }
+            
+            activateStage(index) {
+                if (!this.isRunning) return;
+                
+                const stageCircle = document.getElementById(`stage-${index}`);
+                const stageContent = document.getElementById(`content-${index}`);
+                const stageLabel = document.getElementById(`label-${index}`);
+                const progressDot = document.getElementById(`dot-${index}`);
+                
+                if (!stageCircle) return;
+                
+                // 激活圆形容器
+                stageCircle.classList.remove('inactive');
+                stageCircle.classList.add('active', 'processing');
+                
+                // 显示内容
+                setTimeout(() => {
+                    if (stageContent) {
+                        stageContent.classList.remove('hidden');
+                        stageContent.classList.add('visible');
+                    }
+                }, 300);
+                
+                // 显示标签
+                setTimeout(() => {
+                    if (stageLabel) {
+                        stageLabel.classList.remove('hidden');
+                        stageLabel.classList.add('visible');
+                    }
+                }, 500);
+                
+                // 激活进度点
+                if (progressDot) {
+                    progressDot.classList.add('active');
+                }
+                
+                // 移除处理效果并显示箭头
+                setTimeout(() => {
+                    if (!this.isRunning) return;
+                    
+                    stageCircle.classList.remove('processing');
+                    
+                    if (index < this.stageCount - 1) {
+                        this.showArrow(index);
+                        
+                        // 延迟后激活下一个阶段
+                        setTimeout(() => {
+                            if (!this.isRunning) return;
+                            this.hideArrow(index);
+                            this.activateStage(index + 1);
+                        }, 1500);
+                    } else {
+                        // 动画完成，等待后重新开始循环
+                        setTimeout(() => {
+                            if (this.isRunning) {
+                                this.runCycle();
+                            }
+                        }, this.cycleDelay);
+                    }
+                }, this.animationSpeed);
+            }
+            
+            resetAllStages() {
+                for (let i = 0; i < this.stageCount; i++) {
+                    this.deactivateStage(i);
+                    this.hideArrow(i);
+                }
+            }
+            
+            deactivateStage(index) {
+                const stageCircle = document.getElementById(`stage-${index}`);
+                const stageContent = document.getElementById(`content-${index}`);
+                const stageLabel = document.getElementById(`label-${index}`);
+                const progressDot = document.getElementById(`dot-${index}`);
+                
+                if (stageCircle) {
+                    stageCircle.classList.remove('active', 'processing');
+                    stageCircle.classList.add('inactive');
+                }
+                
+                if (stageContent) {
+                    stageContent.classList.remove('visible');
+                    stageContent.classList.add('hidden');
+                }
+                
+                if (stageLabel) {
+                    stageLabel.classList.remove('visible');
+                    stageLabel.classList.add('hidden');
+                }
+                
+                if (progressDot) {
+                    progressDot.classList.remove('active');
+                }
+            }
+            
+            showArrow(index) {
+                const arrow = document.getElementById(`arrow-${index}`);
+                if (arrow) {
+                    arrow.classList.add('visible');
+                }
+            }
+            
+            hideArrow(index) {
+                const arrow = document.getElementById(`arrow-${index}`);
+                if (arrow) {
+                    arrow.classList.remove('visible');
+                }
+            }
+            
+            // 控制方法（可选）
+            pause() {
+                this.isRunning = false;
+            }
+            
+            resume() {
+                if (!this.isRunning) {
+                    this.startAutoLoop();
+                }
+            }
+            
+            setSpeed(speed) {
+                this.animationSpeed = speed;
+            }
+            
+            setCycleDelay(delay) {
+                this.cycleDelay = delay;
+            }
+        }
+        
+        // 自动初始化
+        window.autoLoopAnimation = new AutoLoopAIAnimation();
+        
+        // 可选：页面失焦时暂停，获得焦点时恢复（节省资源）
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                window.autoLoopAnimation.pause();
+            } else {
+                setTimeout(() => {
+                    window.autoLoopAnimation.resume();
+                }, 500);
+            }
+        });
+    </script>
+</body>
+</html>

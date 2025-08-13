@@ -1,0 +1,223 @@
+/* ASTRA Banner - 纯CSS版本 */
+/* 可以直接在任何HTML项目中使用 */
+
+/* Banner container */
+.astra-banner {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, #000000 0%, #0f0f23 50%, #000000 100%);
+    padding: 2rem;
+    width: 100%;
+    max-width: 64rem;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    margin: 0 auto;
+}
+
+.astra-banner:hover {
+    transform: scale(1.02);
+}
+
+/* Background decorative elements */
+.banner-background {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.gradient-circle-1 {
+    position: absolute;
+    top: 0;
+    left: 25%;
+    width: 18rem;
+    height: 18rem;
+    background: linear-gradient(45deg, rgba(96, 165, 250, 0.08) 0%, rgba(147, 51, 234, 0.08) 100%);
+    border-radius: 50%;
+    filter: blur(3rem);
+    animation: float1 6s ease-in-out infinite;
+}
+
+.gradient-circle-2 {
+    position: absolute;
+    bottom: 0;
+    right: 25%;
+    width: 24rem;
+    height: 24rem;
+    background: linear-gradient(45deg, rgba(168, 85, 247, 0.06) 0%, rgba(236, 72, 153, 0.06) 100%);
+    border-radius: 50%;
+    filter: blur(3rem);
+    animation: float2 8s ease-in-out infinite;
+}
+
+/* Grid pattern */
+.grid-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at center, transparent 1px, rgba(255, 255, 255, 0.005) 1px);
+    background-size: 20px 20px;
+}
+
+/* Geometric lines */
+.geometric-lines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.05;
+}
+
+.line-path {
+    stroke: url(#lineGradient);
+    fill: none;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: drawLine 3s ease-out 0.5s forwards;
+}
+
+.line-path-2 {
+    stroke: url(#lineGradient);
+    fill: none;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: drawLine 3s ease-out 0.8s forwards;
+    opacity: 0.6;
+}
+
+/* Main content */
+.banner-content {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.astra-text {
+    font-family: Impact, "Arial Black", sans-serif;
+    font-size: clamp(3rem, 8vw, 8rem);
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    background: linear-gradient(90deg, #87ceeb 0%, #6495ed 25%, #4169e1 50%, #483d8b 75%, #2f1b69 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 30px rgba(72, 61, 139, 0.4);
+    animation: textAppear 0.8s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px) rotateX(-15deg);
+    transition: all 0.3s ease;
+    margin: 0;
+}
+
+.astra-text:hover {
+    transform: translateY(0) rotateX(0) scale(1.05);
+    text-shadow: 0 0 40px rgba(72, 61, 139, 0.6);
+}
+
+/* Subtle glow effect */
+.glow-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, transparent 0%, transparent 90%, rgba(255, 255, 255, 0.02) 100%);
+    pointer-events: none;
+}
+
+/* Animations */
+@keyframes textAppear {
+    to {
+        opacity: 1;
+        transform: translateY(0) rotateX(0);
+    }
+}
+
+@keyframes drawLine {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes float1 {
+    0%, 100% { 
+        transform: translateY(0) scale(1); 
+    }
+    50% { 
+        transform: translateY(-10px) scale(1.05); 
+    }
+}
+
+@keyframes float2 {
+    0%, 100% { 
+        transform: translateY(0) scale(1); 
+    }
+    50% { 
+        transform: translateY(10px) scale(0.95); 
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .astra-banner {
+        padding: 1.5rem;
+    }
+    
+    .gradient-circle-1,
+    .gradient-circle-2 {
+        width: 12rem;
+        height: 12rem;
+    }
+    
+    .astra-text {
+        font-size: clamp(2rem, 10vw, 4rem);
+    }
+}
+
+@media (max-width: 480px) {
+    .astra-banner {
+        padding: 1rem;
+        border-radius: 0.75rem;
+    }
+    
+    .gradient-circle-1,
+    .gradient-circle-2 {
+        width: 8rem;
+        height: 8rem;
+    }
+}
+
+/* 小尺寸变体 - 适合导航栏或紧凑布局 */
+.astra-banner-small {
+    padding: 1rem;
+    max-width: 20rem;
+    border-radius: 0.75rem;
+}
+
+.astra-banner-small .astra-text {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.astra-banner-small .gradient-circle-1,
+.astra-banner-small .gradient-circle-2 {
+    width: 8rem;
+    height: 8rem;
+}
+
+/* 中等尺寸变体 */
+.astra-banner-medium {
+    padding: 1.5rem;
+    max-width: 40rem;
+}
+
+.astra-banner-medium .astra-text {
+    font-size: clamp(2.5rem, 6vw, 5rem);
+}
+
+/* 大尺寸变体 */
+.astra-banner-large {
+    padding: 3rem;
+    max-width: 80rem;
+}
+
+.astra-banner-large .astra-text {
+    font-size: clamp(4rem, 10vw, 12rem);
+}

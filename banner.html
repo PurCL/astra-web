@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASTRA Banner - HTML Version</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #020617;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        /* Banner container */
+        .astra-banner {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+            background: linear-gradient(135deg, #000000 0%, #0f0f23 50%, #000000 100%);
+            padding: 2rem;
+            width: 100%;
+            max-width: 64rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .astra-banner:hover {
+            transform: scale(1.02);
+        }
+
+        /* Background decorative elements */
+        .banner-background {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .gradient-circle-1 {
+            position: absolute;
+            top: 0;
+            left: 25%;
+            width: 18rem;
+            height: 18rem;
+            background: linear-gradient(45deg, rgba(96, 165, 250, 0.08) 0%, rgba(147, 51, 234, 0.08) 100%);
+            border-radius: 50%;
+            filter: blur(3rem);
+            animation: float1 6s ease-in-out infinite;
+        }
+
+        .gradient-circle-2 {
+            position: absolute;
+            bottom: 0;
+            right: 25%;
+            width: 24rem;
+            height: 24rem;
+            background: linear-gradient(45deg, rgba(168, 85, 247, 0.06) 0%, rgba(236, 72, 153, 0.06) 100%);
+            border-radius: 50%;
+            filter: blur(3rem);
+            animation: float2 8s ease-in-out infinite;
+        }
+
+        /* Grid pattern */
+        .grid-pattern {
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle at center, transparent 1px, rgba(255, 255, 255, 0.005) 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Geometric lines */
+        .geometric-lines {
+            position: absolute;
+            inset: 0;
+            opacity: 0.05;
+        }
+
+        .line-path {
+            stroke: url(#lineGradient);
+            fill: none;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawLine 3s ease-out 0.5s forwards;
+        }
+
+        .line-path-2 {
+            stroke: url(#lineGradient);
+            fill: none;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawLine 3s ease-out 0.8s forwards;
+            opacity: 0.6;
+        }
+
+        /* Main content */
+        .banner-content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .astra-text {
+            font-family: Impact, "Arial Black", sans-serif;
+            font-size: clamp(3rem, 8vw, 8rem);
+            font-weight: 900;
+            letter-spacing: 0.1em;
+            background: linear-gradient(90deg, #87ceeb 0%, #6495ed 25%, #4169e1 50%, #483d8b 75%, #2f1b69 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(72, 61, 139, 0.4);
+            animation: textAppear 0.8s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px) rotateX(-15deg);
+            transition: all 0.3s ease;
+        }
+
+        .astra-text:hover {
+            transform: translateY(20px) rotateX(-15deg) scale(1.05);
+            text-shadow: 0 0 40px rgba(72, 61, 139, 0.6);
+        }
+
+        /* Subtle glow effect */
+        .glow-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, transparent 0%, transparent 90%, rgba(255, 255, 255, 0.02) 100%);
+            pointer-events: none;
+        }
+
+        /* Animations */
+        @keyframes textAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0) rotateX(0);
+            }
+        }
+
+        @keyframes drawLine {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @keyframes float1 {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-10px) scale(1.05); }
+        }
+
+        @keyframes float2 {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(10px) scale(0.95); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .astra-banner {
+                padding: 1.5rem;
+            }
+            
+            .gradient-circle-1,
+            .gradient-circle-2 {
+                width: 12rem;
+                height: 12rem;
+            }
+        }
+
+        /* Demo page styles */
+        .demo-container {
+            width: 100%;
+            max-width: 80rem;
+        }
+
+        .demo-section {
+            margin-bottom: 3rem;
+        }
+
+        .demo-title {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .demo-description {
+            color: #94a3b8;
+            text-align: center;
+            margin-bottom: 2rem;
+            max-width: 48rem;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        .code-block {
+            background-color: #1e293b;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .usage-section {
+            background-color: #1e293b;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-top: 2rem;
+            color: white;
+        }
+
+        .usage-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #60a5fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <!-- Main demo section -->
+        <div class="demo-section">
+            <h1 class="demo-title">ASTRA Banner - 纯HTML版本</h1>
+            <p class="demo-description">
+                这是您的ASTRA Banner的纯HTML/CSS版本，包含了完整的动画效果和渐变样式。
+                可以直接复制到任何HTML文件中使用，无需React或其他框架。
+            </p>
+            
+            <!-- The actual banner -->
+            <div class="astra-banner" onclick="handleBannerClick()">
+                <div class="banner-background">
+                    <div class="gradient-circle-1"></div>
+                    <div class="gradient-circle-2"></div>
+                    
+                    <svg class="geometric-lines" viewBox="0 0 400 200">
+                        <defs>
+                            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#87ceeb" />
+                                <stop offset="100%" stop-color="#483d8b" />
+                            </linearGradient>
+                        </defs>
+                        <path class="line-path" d="M0,100 Q100,50 200,100 T400,100" stroke-width="2" opacity="0.15"/>
+                        <path class="line-path-2" d="M0,120 Q150,70 300,120 T400,120" stroke-width="1" opacity="0.1"/>
+                    </svg>
+                    
+                    <div class="grid-pattern"></div>
+                </div>
+                
+                <div class="banner-content">
+                    <h1 class="astra-text">ASTRA</h1>
+                </div>
+                
+                <div class="glow-overlay"></div>
+            </div>
+        </div>
+
+        <!-- Usage instructions -->
+        <div class="usage-section">
+            <h2 class="usage-title">如何在您的HTML文件中使用：</h2>
+            
+            <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">1. 最简单的使用方法：</h3>
+            <div class="code-block">复制上面整个Banner的HTML和CSS代码到您的HTML文件中即可。</div>
+            
+            <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">2. 仅使用Banner部分：</h3>
+            <div class="code-block">&lt;!-- 只复制这部分到您的HTML中 --&gt;
+&lt;div class="astra-banner"&gt;
+    &lt;div class="banner-background"&gt;
+        &lt;div class="gradient-circle-1"&gt;&lt;/div&gt;
+        &lt;div class="gradient-circle-2"&gt;&lt;/div&gt;
+        
+        &lt;svg class="geometric-lines" viewBox="0 0 400 200"&gt;
+            &lt;defs&gt;
+                &lt;linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="100%"&gt;
+                    &lt;stop offset="0%" stop-color="#87ceeb" /&gt;
+                    &lt;stop offset="100%" stop-color="#483d8b" /&gt;
+                &lt;/linearGradient&gt;
+            &lt;/defs&gt;
+            &lt;path class="line-path" d="M0,100 Q100,50 200,100 T400,100" stroke-width="2" opacity="0.15"/&gt;
+            &lt;path class="line-path-2" d="M0,120 Q150,70 300,120 T400,120" stroke-width="1" opacity="0.1"/&gt;
+        &lt;/svg&gt;
+        
+        &lt;div class="grid-pattern"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    
+    &lt;div class="banner-content"&gt;
+        &lt;h1 class="astra-text"&gt;ASTRA&lt;/h1&gt;
+    &lt;/div&gt;
+    
+    &lt;div class="glow-overlay"&gt;&lt;/div&gt;
+&lt;/div&gt;</div>
+
+            <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">3. 自定义集成：</h3>
+            <div class="code-block">/* 将CSS样式添加到您的样式表中 */
+/* 然后使用上面的HTML结构 */
+/* 可以修改 .astra-banner 的尺寸和位置 */
+
+.my-custom-container .astra-banner {
+    max-width: 800px;
+    margin: 2rem auto;
+}</div>
+
+            <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">4. 添加点击事件：</h3>
+            <div class="code-block">&lt;script&gt;
+function handleBannerClick() {
+    // 您的点击处理逻辑
+    console.log('Banner被点击了！');
+    // 例如：跳转到其他页面
+    // window.location.href = '/about';
+}
+&lt;/script&gt;</div>
+
+            <p style="margin-top: 1.5rem; color: #94a3b8;">
+                这个HTML版本包含了所有的视觉效果：渐变背景、动画文字、悬停效果和几何装饰。
+                您可以根据需要调整颜色、尺寸或动画效果。
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function handleBannerClick() {
+            alert('Banner被点击了！您可以在这里添加导航或其他功能。');
+        }
+    </script>
+</body>
+</html>

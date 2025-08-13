@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASTRA 漏洞检测流程动画</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React and ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Motion (Framer Motion) -->
+    <script src="https://unpkg.com/motion@12.23.12/dist/motion.js"></script>
+    
+    <style>
+        /* Custom styles for ASTRA animation */
+        @import url('https://fonts.googleapis.com/css2?family=Impact:wght@400&display=swap');
+        
+        :root {
+            --font-size: 14px;
+            --background: #020617;
+            --foreground: #f8fafc;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: var(--background);
+            color: var(--foreground);
+            font-size: var(--font-size);
+        }
+        
+        .astra-container {
+            width: 100%;
+            min-height: 100vh;
+            background-color: #020617;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Impact font family fallback */
+        .impact-font {
+            font-family: 'Impact', 'Arial Black', sans-serif !important;
+        }
+        
+        /* Custom gradient text effect */
+        .gradient-text {
+            background: linear-gradient(90deg, #87ceeb 0%, #6495ed 25%, #4169e1 50%, #483d8b 75%, #2f1b69 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Ensure smooth animations */
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* Configure Tailwind for dark theme */
+        .astra-container {
+            --tw-bg-opacity: 1;
+            background-color: rgb(2 6 23 / var(--tw-bg-opacity));
+        }
+    </style>
+    
+    <script>
+        // Configure Tailwind
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'slate': {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="astra-vulnerability-animation-root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { motion } = Motion;
+
+        function VulnerabilityFlowAnimation() {
+            const [currentStage, setCurrentStage] = useState(0);
+            const [showArrows, setShowArrows] = useState(false);
+            const [isRunning, setIsRunning] = useState(false);
+
+            const stages = [
+                {
+                    title: "Input Space",
+                    subtitle: "(Prompt)",
+                    content: "Our red-teaming identifies vulnerabilities in the input space",
+                    bgGradient: "from-blue-500/10 via-blue-400/8 to-cyan-400/6",
+                    glowColor: "rgba(96, 165, 250, 0.3)"
+                },
+                {
+                    title: "Output Space",
+                    subtitle: "(Response)", 
+                    content: "Security assessment completed with threat mitigation",
+                    bgGradient: "from-red-500/10 via-red-400/8 to-pink-500/6",
+                    glowColor: "rgba(239, 68, 68, 0.3)"
+                }
+            ];
+
+            const runCycle = () => {
+                setIsRunning(true);
+                setCurrentStage(0);
+                setShowArrows(false);
+                
+                resetAllStages();
+                activateStage(0);
+            };
+
+            const resetAllStages = () => {
+                // 这个函数会被activateStage的逻辑处理
+            };
+
+            const activateStage = (index) => {
+                setCurrentStage(index);
+                
+                setTimeout(() => {
+                    if (index < stages.length - 1) {
+                        setShowArrows(true);
+                        setTimeout(() => {
+                            activateStage(index + 1);
+                        }, 2000);
+                    } else {
+                        setTimeout(() => {
+                            if (isRunning) {
+                                runCycle();
+                            }
+                        }, 3000);
+                    }
+                }, 2500);
+            };
+
+            useEffect(() => {
+                const timer = setTimeout(() => {
+                    runCycle();
+                }, 1000);
+
+                return () => clearTimeout(timer);
+            }, []);
+
+            useEffect(() => {
+                const handleVisibilityChange = () => {
+                    if (document.hidden) {
+                        setIsRunning(false);
+                    } else {
+                        setTimeout(() => {
+                            runCycle();
+                        }, 500);
+                    }
+                };
+
+                document.addEventListener('visibilitychange', handleVisibilityChange);
+                return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+            }, []);
+
+            return React.createElement('div', {
+                className: "astra-container"
+            }, [
+                // 背景装饰
+                React.createElement('div', {
+                    key: 'background',
+                    className: "absolute inset-0 pointer-events-none"
+                }, [
+                    React.createElement(motion.div, {
+                        key: 'bg1',
+                        className: "absolute top-[10%] left-[20%] w-[400px] h-[400px] bg-gradient-to-r from-blue-400/6 to-purple-600/4 rounded-full blur-[60px]",
+                        animate: {
+                            y: [0, -20, 0],
+                            scale: [1, 1.05, 1]
+                        },
+                        transition: {
+                            duration: 8,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                        }
+                    }),
+                    React.createElement(motion.div, {
+                        key: 'bg2',
+                        className: "absolute bottom-[10%] right-[20%] w-[500px] h-[500px] bg-gradient-to-r from-purple-500/4 to-pink-500/3 rounded-full blur-[60px]",
+                        animate: {
+                            y: [0, 20, 0],
+                            scale: [1, 0.95, 1]
+                        },
+                        transition: {
+                            duration: 10,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                        }
+                    }),
+                    React.createElement('div', {
+                        key: 'grid',
+                        className: "absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_1px,rgba(255,255,255,0.02)_1px)] bg-[size:30px_30px]"
+                    })
+                ]),
+
+                // 循环指示器
+                React.createElement('div', {
+                    key: 'indicator',
+                    className: "absolute top-8 right-8 bg-slate-800/80 backdrop-blur-sm px-4 py-2 rounded-full text-sm text-slate-300 border border-slate-700/50 flex items-center gap-2 z-20"
+                }, [
+                    React.createElement(motion.span, {
+                        key: 'icon',
+                        animate: { rotate: 360 },
+                        transition: { duration: 2, repeat: Infinity, ease: "linear" }
+                    }, '🔄'),
+                    '自动循环播放'
+                ]),
+
+                // 主内容
+                React.createElement('div', {
+                    key: 'content',
+                    className: "relative z-10 flex items-center justify-center min-h-screen p-8"
+                }, [
+                    React.createElement('div', {
+                        key: 'main',
+                        className: "relative flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 lg:gap-24 w-full max-w-7xl mx-auto"
+                    }, [
+                        // 桌面版中央箭头
+                        React.createElement(motion.div, {
+                            key: 'arrow',
+                            className: "hidden md:block absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none",
+                            initial: { opacity: 0, x: -40 },
+                            animate: { 
+                                opacity: currentStage >= 0 && showArrows ? 1 : 0,
+                                x: currentStage >= 0 && showArrows ? 0 : -40
+                            },
+                            transition: { duration: 0.8, ease: "easeOutQuart" },
+                            style: {
+                                filter: 'none',
+                                background: 'transparent'
+                            }
+                        }, React.createElement('svg', {
+                            width: "200",
+                            height: "40",
+                            viewBox: "0 0 200 40",
+                            style: {
+                                background: 'transparent',
+                                overflow: 'visible'
+                            }
+                        }, [
+                            React.createElement('defs', { key: 'defs' }, [
+                                React.createElement('linearGradient', {
+                                    key: 'gradient',
+                                    id: "centralArrowGradient",
+                                    x1: "0%", y1: "0%", x2: "100%", y2: "0%"
+                                }, [
+                                    React.createElement('stop', { key: 's1', offset: "0%", stopColor: "rgba(135, 206, 235, 0.9)" }),
+                                    React.createElement('stop', { key: 's2', offset: "25%", stopColor: "rgba(100, 149, 237, 0.95)" }),
+                                    React.createElement('stop', { key: 's3', offset: "50%", stopColor: "rgba(65, 105, 225, 1)" }),
+                                    React.createElement('stop', { key: 's4', offset: "75%", stopColor: "rgba(72, 61, 139, 0.95)" }),
+                                    React.createElement('stop', { key: 's5', offset: "100%", stopColor: "rgba(47, 27, 105, 0.9)" })
+                                ]),
+                                React.createElement('filter', {
+                                    key: 'filter',
+                                    id: "arrowGlow"
+                                }, [
+                                    React.createElement('feGaussianBlur', { key: 'blur', stdDeviation: "3", result: "coloredBlur" }),
+                                    React.createElement('feMerge', { key: 'merge' }, [
+                                        React.createElement('feMergeNode', { key: 'm1', in: "coloredBlur" }),
+                                        React.createElement('feMergeNode', { key: 'm2', in: "SourceGraphic" })
+                                    ])
+                                ])
+                            ]),
+                            React.createElement(motion.path, {
+                                key: 'path1',
+                                d: "M20,20 L180,20 M160,10 L180,20 L160,30",
+                                stroke: "url(#centralArrowGradient)",
+                                strokeWidth: "4",
+                                fill: "none",
+                                strokeLinecap: "round",
+                                strokeLinejoin: "round",
+                                initial: { pathLength: 0, opacity: 0 },
+                                animate: { 
+                                    pathLength: currentStage >= 0 && showArrows ? 1 : 0,
+                                    opacity: currentStage >= 0 && showArrows ? 1 : 0
+                                },
+                                transition: { duration: 1.8, ease: "easeOutQuart" },
+                                filter: "url(#arrowGlow)"
+                            }),
+                            React.createElement(motion.path, {
+                                key: 'path2',
+                                d: "M20,20 L180,20",
+                                stroke: "rgba(135, 206, 235, 0.3)",
+                                strokeWidth: "8",
+                                fill: "none",
+                                strokeLinecap: "round",
+                                initial: { pathLength: 0, opacity: 0 },
+                                animate: { 
+                                    pathLength: currentStage >= 0 && showArrows ? 1 : 0,
+                                    opacity: currentStage >= 0 && showArrows ? 0.6 : 0
+                                },
+                                transition: { duration: 1.8, ease: "easeOutQuart", delay: 0.2 },
+                                filter: "blur(4px)"
+                            }),
+                            React.createElement(motion.circle, {
+                                key: 'particle1',
+                                cx: "20",
+                                cy: "20",
+                                r: "2",
+                                fill: "rgba(135, 206, 235, 0.8)",
+                                initial: { opacity: 0 },
+                                animate: {
+                                    cx: currentStage >= 0 && showArrows ? [20, 180] : 20,
+                                    opacity: currentStage >= 0 && showArrows ? [0, 1, 1, 0] : 0
+                                },
+                                transition: {
+                                    duration: 3,
+                                    repeat: Infinity,
+                                    ease: "easeInOut",
+                                    delay: 1
+                                },
+                                filter: "blur(0.5px)"
+                            }),
+                            React.createElement(motion.circle, {
+                                key: 'particle2',
+                                cx: "20",
+                                cy: "20",
+                                r: "1",
+                                fill: "rgba(100, 149, 237, 0.6)",
+                                initial: { opacity: 0 },
+                                animate: {
+                                    cx: currentStage >= 0 && showArrows ? [20, 180] : 20,
+                                    opacity: currentStage >= 0 && showArrows ? [0, 0.8, 0.8, 0] : 0
+                                },
+                                transition: {
+                                    duration: 2.4,
+                                    repeat: Infinity,
+                                    ease: "easeInOut",
+                                    delay: 1.3
+                                },
+                                filter: "blur(0.3px)"
+                            })
+                        ])),
+
+                        // 椭圆容器
+                        ...stages.map((stage, index) => 
+                            React.createElement('div', {
+                                key: `stage-${index}`,
+                                className: "flex flex-col items-center relative z-10"
+                            }, [
+                                React.createElement(motion.div, {
+                                    key: `ellipse-${index}`,
+                                    className: "relative w-72 h-56 border-2 border-slate-700/50 flex flex-col items-center justify-center p-8 text-center backdrop-blur-sm",
+                                    style: {
+                                        borderRadius: '50%',
+                                        boxShadow: currentStage >= index 
+                                            ? `0 0 40px ${stage.glowColor}, 0 0 80px ${stage.glowColor}20`
+                                            : '0 10px 25px rgba(0, 0, 0, 0.3)'
+                                    },
+                                    initial: { 
+                                        scale: 0.7, 
+                                        opacity: 0.2,
+                                        filter: "blur(8px)"
+                                    },
+                                    animate: { 
+                                        scale: currentStage >= index ? 1 : 0.7,
+                                        opacity: currentStage >= index ? 1 : 0.2,
+                                        filter: currentStage >= index ? "blur(0px)" : "blur(8px)"
+                                    },
+                                    transition: { 
+                                        duration: 1, 
+                                        ease: "easeOut"
+                                    }
+                                }, [
+                                    // 脉冲效果
+                                    ...(currentStage === index ? [
+                                        React.createElement(motion.div, {
+                                            key: 'pulse1',
+                                            className: `absolute inset-0 bg-gradient-to-br ${stage.bgGradient}`,
+                                            style: { borderRadius: '50%' },
+                                            initial: { scale: 0, opacity: 0 },
+                                            animate: { 
+                                                scale: [0, 1.3, 0],
+                                                opacity: [0, 0.4, 0]
+                                            },
+                                            transition: { 
+                                                duration: 2,
+                                                repeat: Infinity,
+                                                ease: "easeInOut"
+                                            }
+                                        }),
+                                        React.createElement(motion.div, {
+                                            key: 'pulse2',
+                                            className: "absolute inset-4 bg-white/5",
+                                            style: { borderRadius: '50%' },
+                                            initial: { scale: 0, opacity: 0 },
+                                            animate: { 
+                                                scale: [0, 1.1, 0],
+                                                opacity: [0, 0.8, 0]
+                                            },
+                                            transition: { 
+                                                duration: 1.5,
+                                                repeat: Infinity,
+                                                ease: "easeInOut",
+                                                delay: 0.2
+                                            }
+                                        })
+                                    ] : []),
+
+                                    // SVG装饰
+                                    React.createElement('svg', {
+                                        key: 'decoration',
+                                        className: "absolute inset-0 w-full h-full opacity-10",
+                                        viewBox: "0 0 200 200"
+                                    }, [
+                                        React.createElement('defs', { key: 'svg-defs' }, 
+                                            React.createElement('linearGradient', {
+                                                id: `autoStageGradient${index}`,
+                                                x1: "0%", y1: "0%", x2: "100%", y2: "100%"
+                                            }, [
+                                                React.createElement('stop', { key: 'sg1', offset: "0%", stopColor: "#87ceeb" }),
+                                                React.createElement('stop', { key: 'sg2', offset: "100%", stopColor: "#483d8b" })
+                                            ])
+                                        ),
+                                        React.createElement('circle', {
+                                            key: 'c1',
+                                            cx: "100", cy: "100", r: "80",
+                                            stroke: `url(#autoStageGradient${index})`,
+                                            strokeWidth: "1", fill: "none", opacity: "0.3"
+                                        }),
+                                        React.createElement('circle', {
+                                            key: 'c2',
+                                            cx: "100", cy: "100", r: "60",
+                                            stroke: `url(#autoStageGradient${index})`,
+                                            strokeWidth: "0.5", fill: "none", opacity: "0.2"
+                                        })
+                                    ]),
+
+                                    // 椭圆内容 - 根据index渲染不同内容
+                                    ...(index === 1 ? [
+                                        // 第二个椭圆的内容
+                                        React.createElement('div', {
+                                            key: 'bg1',
+                                            className: "absolute inset-0",
+                                            style: { 
+                                                borderRadius: '50%',
+                                                background: `
+                                                    radial-gradient(ellipse 120% 60% at 50% 25%, rgba(79, 70, 229, 0.4) 0%, rgba(79, 70, 229, 0.2) 40%, transparent 70%),
+                                                    radial-gradient(ellipse 120% 60% at 50% 75%, rgba(96, 165, 250, 0.35) 0%, rgba(96, 165, 250, 0.18) 40%, transparent 70%),
+                                                    linear-gradient(90deg, 
+                                                        rgba(79, 70, 229, 0.25) 0%, 
+                                                        rgba(85, 95, 235, 0.24) 20%,
+                                                        rgba(90, 115, 238, 0.23) 35%,
+                                                        rgba(88, 125, 242, 0.22) 50%,
+                                                        rgba(85, 135, 246, 0.21) 65%,
+                                                        rgba(90, 150, 248, 0.20) 80%,
+                                                        rgba(96, 165, 250, 0.22) 100%
+                                                    )
+                                                `
+                                            }
+                                        }),
+                                        React.createElement('div', {
+                                            key: 'bg2',
+                                            className: "absolute inset-3",
+                                            style: {
+                                                borderRadius: '50%',
+                                                background: `
+                                                    radial-gradient(ellipse 80% 40% at 60% 30%, rgba(67, 56, 202, 0.15) 0%, transparent 60%),
+                                                    radial-gradient(ellipse 80% 40% at 40% 70%, rgba(59, 130, 246, 0.12) 0%, transparent 60%),
+                                                    radial-gradient(ellipse 100% 20% at 50% 50%, rgba(88, 125, 242, 0.08) 0%, transparent 80%)
+                                                `
+                                            }
+                                        }),
+                                        React.createElement(motion.div, {
+                                            key: 'text1',
+                                            className: "absolute top-0 right-0 w-full h-1/2 flex items-center justify-end pr-8",
+                                            initial: { opacity: 0, y: -10 },
+                                            animate: { 
+                                                opacity: currentStage >= index ? 1 : 0,
+                                                y: currentStage >= index ? 0 : -10
+                                            },
+                                            transition: { 
+                                                duration: 0.8, 
+                                                delay: currentStage === index ? 0.5 : 0
+                                            }
+                                        }, React.createElement('span', {
+                                            className: "impact-font font-black uppercase tracking-wide text-sm drop-shadow-lg",
+                                            style: {
+                                                color: '#ffffff',
+                                                textShadow: '0 2px 4px rgba(0, 0, 0, 0.5), 0 0 8px rgba(0, 0, 0, 0.3)'
+                                            }
+                                        }, 'Secure')),
+                                        React.createElement(motion.div, {
+                                            key: 'ellipse-inner',
+                                            className: "absolute flex items-center justify-center",
+                                            style: {
+                                                bottom: '22%',
+                                                right: '42%',
+                                                transform: 'translate(50%, 50%)',
+                                                width: '110px',
+                                                height: '55px',
+                                            },
+                                            initial: { opacity: 0, scale: 0 },
+                                            animate: { 
+                                                opacity: currentStage >= index ? 1 : 0, 
+                                                scale: currentStage >= index ? 1 : 0 
+                                            },
+                                            transition: { duration: 1, delay: currentStage === index ? 0.9 : 0 }
+                                        }, React.createElement('div', {
+                                            className: "w-full h-full relative flex items-center justify-center",
+                                            style: {
+                                                borderRadius: '50%',
+                                                background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.4) 0%, rgba(22, 163, 74, 0.35) 50%, rgba(16, 185, 129, 0.3) 100%)',
+                                                border: '1px solid rgba(34, 197, 94, 0.3)',
+                                                boxShadow: '0 0 15px rgba(34, 197, 94, 0.25), inset 0 0 10px rgba(255, 255, 255, 0.05)'
+                                            }
+                                        }, React.createElement(motion.span, {
+                                            className: "impact-font text-xs font-semibold uppercase tracking-wider text-center px-2 leading-tight",
+                                            style: {
+                                                color: '#ffffff',
+                                                textShadow: '0 1px 3px rgba(0, 0, 0, 0.7), 0 0 6px rgba(0, 0, 0, 0.5)',
+                                                wordSpacing: '-0.1em',
+                                                fontSize: '10px'
+                                            },
+                                            initial: { opacity: 0, scale: 0.8 },
+                                            animate: { 
+                                                opacity: currentStage >= index ? 1 : 0, 
+                                                scale: currentStage >= index ? 1 : 0.8 
+                                            },
+                                            transition: { duration: 0.8, delay: currentStage === index ? 1.2 : 0 }
+                                        }, 'mitigation-ready'))),
+                                        React.createElement(motion.div, {
+                                            key: 'text2',
+                                            className: "absolute bottom-0 right-0 w-full h-1/2 flex items-center justify-end pr-8",
+                                            initial: { opacity: 0, y: 10 },
+                                            animate: { 
+                                                opacity: currentStage >= index ? 1 : 0,
+                                                y: currentStage >= index ? 0 : 10
+                                            },
+                                            transition: { 
+                                                duration: 0.8, 
+                                                delay: currentStage === index ? 0.7 : 0
+                                            }
+                                        }, React.createElement('span', {
+                                            className: "impact-font font-black uppercase tracking-wide text-sm drop-shadow-lg",
+                                            style: {
+                                                color: '#ffffff',
+                                                textShadow: '0 2px 4px rgba(0, 0, 0, 0.5), 0 0 8px rgba(0, 0, 0, 0.3)'
+                                            }
+                                        }, 'Protected'))
+                                    ] : []),
+
+                                    ...(index === 0 ? [
+                                        // 第一个椭圆的内容
+                                        React.createElement('div', {
+                                            key: 'bg1',
+                                            className: "absolute inset-0",
+                                            style: { 
+                                                borderRadius: '50%',
+                                                background: `
+                                                    radial-gradient(ellipse 120% 60% at 50% 25%, rgba(96, 165, 250, 0.4) 0%, rgba(96, 165, 250, 0.2) 40%, transparent 70%),
+                                                    radial-gradient(ellipse 120% 60% at 50% 75%, rgba(79, 70, 229, 0.35) 0%, rgba(79, 70, 229, 0.18) 40%, transparent 70%),
+                                                    linear-gradient(160deg, 
+                                                        rgba(96, 165, 250, 0.25) 0%, 
+                                                        rgba(90, 150, 248, 0.24) 20%,
+                                                        rgba(85, 135, 246, 0.23) 35%,
+                                                        rgba(88, 125, 242, 0.22) 50%,
+                                                        rgba(90, 115, 238, 0.21) 65%,
+                                                        rgba(85, 95, 235, 0.20) 80%,
+                                                        rgba(79, 70, 229, 0.22) 100%
+                                                    )
+                                                `
+                                            }
+                                        }),
+                                        React.createElement('div', {
+                                            key: 'bg2',
+                                            className: "absolute inset-3",
+                                            style: {
+                                                borderRadius: '50%',
+                                                background: `
+                                                    radial-gradient(ellipse 80% 40% at 40% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 60%),
+                                                    radial-gradient(ellipse 80% 40% at 60% 70%, rgba(67, 56, 202, 0.12) 0%, transparent 60%),
+                                                    radial-gradient(ellipse 100% 20% at 50% 50%, rgba(88, 125, 242, 0.08) 0%, transparent 80%)
+                                                `
+                                            }
+                                        }),
+                                        React.createElement(motion.div, {
+                                            key: 'text1',
+                                            className: "absolute top-0 left-0 w-full h-1/2 flex items-center justify-start pl-8",
+                                            initial: { opacity: 0, y: -10 },
+                                            animate: { 
+                                                opacity: currentStage >= index ? 1 : 0,
+                                                y: currentStage >= index ? 0 : -10
+                                            },
+                                            transition: { 
+                                                duration: 0.8, 
+                                                delay: currentStage === index ? 0.5 : 0
+                                            }
+                                        }, React.createElement('span', {
+                                            className: "impact-font font-black uppercase tracking-wide text-sm drop-shadow-lg",
+                                            style: {
+                                                color: '#ffffff',
+                                                textShadow: '0 2px 4px rgba(0, 0, 0, 0.5), 0 0 8px rgba(0, 0, 0, 0.3)'
+                                            }
+                                        }, 'Unrealistic')),
+                                        React.createElement(motion.div, {
+                                            key: 'ellipse-inner',
+                                            className: "absolute flex items-center justify-center",
+                                            style: {
+                                                bottom: '22%',
+                                                left: '42%',
+                                                transform: 'translate(-50%, 50%)',
+                                                width: '110px',
+                                                height: '55px',
+                                            },
+                                            initial: { opacity: 0, scale: 0 },
+                                            animate: { 
+                                                opacity: currentStage >= index ? 1 : 0, 
+                                                scale: currentStage >= index ? 1 : 0 
+                                            },
+                                            transition: { duration: 1, delay: currentStage === index ? 0.9 : 0 }
+                                        }, React.createElement('div', {
+                                            className: "w-full h-full relative flex items-center justify-center",
+                                            style: {
+                                                borderRadius: '50%',
+                                                background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.4) 0%, rgba(185, 28, 28, 0.35) 50%, rgba(239, 68, 68, 0.3) 100%)',
+                                                border: '1px solid rgba(220, 38, 38, 0.3)',
+                                                boxShadow: '0 0 15px rgba(220, 38, 38, 0.25), inset 0 0 10px rgba(255, 255, 255, 0.05)'
+                                            }
+                                        }, React.createElement(motion.span, {
+                                            className: "impact-font text-xs font-semibold uppercase tracking-wider text-center px-2 leading-tight",
+                                            style: {
+                                                color: '#ffffff',
+                                                textShadow: '0 1px 3px rgba(0, 0, 0, 0.7), 0 0 6px rgba(0, 0, 0, 0.5)',
+                                                wordSpacing: '-0.1em',
+                                                fontSize: '10px'
+                                            },
+                                            initial: { opacity: 0, scale: 0.8 },
+                                            animate: { 
+                                                opacity: currentStage >= index ? 1 : 0, 
+                                                scale: currentStage >= index ? 1 : 0.8 
+                                            },
+                                            transition: { duration: 0.8, delay: currentStage === index ? 1.2 : 0 }
+                                        }, 'violation-inducing'))),
+                                        React.createElement(motion.div, {
+                                            key: 'text2',
+                                            className: "absolute bottom-0 left-0 w-full h-1/2 flex items-center justify-start pl-8",
+                                            initial: { opacity: 0, y: 10 },
+                                            animate: { 
+                                                opacity: currentStage >= index ? 1 : 0,
+                                                y: currentStage >= index ? 0 : 10
+                                            },
+                                            transition: { 
+                                                duration: 0.8, 
+                                                delay: currentStage === index ? 0.7 : 0
+                                            }
+                                        }, React.createElement('span', {
+                                            className: "impact-font font-black uppercase tracking-wide text-sm drop-shadow-lg",
+                                            style: {
+                                                color: '#ffffff',
+                                                textShadow: '0 2px 4px rgba(0, 0, 0, 0.5), 0 0 8px rgba(0, 0, 0, 0.3)'
+                                            }
+                                        }, 'Realistic'))
+                                    ] : [])
+                                ]),
+
+                                // 标签
+                                React.createElement(motion.div, {
+                                    key: `label-${index}`,
+                                    className: "mt-6 text-center",
+                                    initial: { y: 15, opacity: 0 },
+                                    animate: { 
+                                        y: currentStage >= index ? 0 : 15,
+                                        opacity: currentStage >= index ? 1 : 0
+                                    },
+                                    transition: { 
+                                        duration: 0.8, 
+                                        delay: currentStage === index ? 0.5 : 0
+                                    }
+                                }, [
+                                    React.createElement('h4', {
+                                        key: 'title',
+                                        className: "impact-font gradient-text font-black text-lg tracking-wide"
+                                    }, stage.title),
+                                    React.createElement('p', {
+                                        key: 'subtitle',
+                                        className: "text-sm text-slate-400 mt-1"
+                                    }, stage.subtitle)
+                                ])
+                            ])
+                        )
+                    ]),
+
+                    // 进度指示器
+                    React.createElement('div', {
+                        key: 'progress',
+                        className: "flex justify-center mt-16"
+                    }, React.createElement('div', {
+                        className: "flex gap-3"
+                    }, stages.map((_, index) => 
+                        React.createElement(motion.div, {
+                            key: `progress-${index}`,
+                            className: "relative",
+                            initial: { scale: 0 },
+                            animate: { scale: 1 },
+                            transition: { delay: index * 0.1 }
+                        }, [
+                            React.createElement('div', {
+                                key: 'dot',
+                                className: `w-4 h-4 rounded-full border-2 transition-all duration-500 ${
+                                    currentStage >= index 
+                                        ? 'border-blue-400 bg-blue-500/80 shadow-lg' 
+                                        : 'border-slate-600 bg-slate-800'
+                                }`,
+                                style: {
+                                    boxShadow: currentStage >= index 
+                                        ? '0 0 12px rgba(59, 130, 246, 0.6)' 
+                                        : 'none'
+                                }
+                            }),
+                            ...(currentStage >= index ? [
+                                React.createElement(motion.div, {
+                                    key: 'glow',
+                                    className: "absolute inset-0 rounded-full bg-blue-400/30",
+                                    initial: { scale: 0, opacity: 0 },
+                                    animate: { 
+                                        scale: [0, 2, 0],
+                                        opacity: [0, 0.8, 0]
+                                    },
+                                    transition: { 
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        ease: "easeOut"
+                                    }
+                                })
+                            ] : [])
+                        ])
+                    ))),
+
+                    // 描述文字
+                    React.createElement(motion.div, {
+                        key: 'description',
+                        className: "text-center mt-12 max-w-3xl mx-auto",
+                        initial: { opacity: 0, y: 30 },
+                        animate: { opacity: 1, y: 0 },
+                        transition: { delay: 0.5 }
+                    }, [
+                        React.createElement('h2', {
+                            key: 'main-title',
+                            className: "impact-font gradient-text text-4xl font-black mb-6 tracking-wide",
+                            style: {
+                                textShadow: '0 0 30px rgba(72, 61, 139, 0.4)'
+                            }
+                        }, 'ASTRA 漏洞检测流程'),
+                        React.createElement('p', {
+                            key: 'description-text',
+                            className: "text-slate-300 leading-relaxed text-lg"
+                        }, '这个动画展示了ASTRA红队系统如何识别安全漏洞：从分析输入空间中的威胁，通过转换层的漏洞检测，最终完成全面的安全评估和威胁缓解。')
+                    ])
+                ])
+            ]);
+        }
+
+        function App() {
+            return React.createElement('div', {
+                className: "min-h-screen bg-slate-950"
+            }, React.createElement(VulnerabilityFlowAnimation));
+        }
+
+        // 渲染应用
+        const root = ReactDOM.createRoot(document.getElementById('astra-vulnerability-animation-root'));
+        root.render(React.createElement(App));
+    </script>
+
+    <!-- Babel for JSX transformation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</body>
+</html>
